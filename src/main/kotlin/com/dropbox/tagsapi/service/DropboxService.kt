@@ -30,7 +30,7 @@ class DropboxService {
     private fun iterateDropboxFoldersAndFiles(client: DbxClientV2, result: ListFolderResult) {
         for (metadata in result.entries) {
             if (metadata is FileMetadata) {
-                val dropboxFile = DropboxFile(id = metadata.id, name = metadata.name, path = metadata.pathLower, tags = arrayOf(""))
+                val dropboxFile = DropboxFile(id = metadata.id.split(":").get(1), name = metadata.name, path = metadata.pathLower, tags = null)
                 dropboxFiles.add(dropboxFile)
             }
 

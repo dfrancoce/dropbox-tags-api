@@ -1,5 +1,6 @@
 package com.dropbox.tagsapi.service
 
+import com.dropbox.tagsapi.model.DropboxFile
 import com.dropbox.tagsapi.repository.DropboxSolrRepository
 import org.springframework.stereotype.Service
 import javax.annotation.PostConstruct

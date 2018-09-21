@@ -5,10 +5,7 @@ services:
     ports:
     - "8983:8983"
     volumes:
-    - data:/opt/solr/server/solr/mycores
-    entrypoint:
-    - docker-entrypoint.sh
-    - solr-precreate
-    - dropboxFile
+    - dropboxFile:/opt/solr/server/solr/dropboxFile
 volumes:
-  data:
+  dropboxFile:
+    external: true
