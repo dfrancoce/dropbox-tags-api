@@ -1,6 +1,5 @@
 package com.dropbox.tagsapi.service
 
-import com.dropbox.tagsapi.model.DropboxFile
 import com.dropbox.tagsapi.repository.DropboxSolrRepository
 import org.springframework.stereotype.Service
 import javax.annotation.PostConstruct
@@ -17,6 +16,7 @@ class DropboxSolrService(private val dropboxService: DropboxService, private val
     @PostConstruct
     fun index() {
         val dropboxFiles = dropboxService.getFilesFromDropbox()
-        dropboxSolrRepository.saveAll(dropboxFiles)
+        dropboxFiles.filter { file -> !dropboxSolrRepository.existsById(file.id) }
+                .forEach { file -> dropboxSolrRepository.save(file) }
     }
 }
