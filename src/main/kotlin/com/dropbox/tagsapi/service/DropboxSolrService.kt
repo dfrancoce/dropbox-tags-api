@@ -16,7 +16,6 @@ class DropboxSolrService(private val dropboxService: DropboxService, private val
     @PostConstruct
     fun index() {
         val dropboxFiles = dropboxService.getFilesFromDropbox()
-        dropboxFiles.filter { file -> !dropboxSolrRepository.existsById(file.id) }
-                .forEach { file -> dropboxSolrRepository.save(file) }
+        dropboxFiles.filter { file -> !dropboxSolrRepository.existsById(file.id) }.forEach { file -> dropboxSolrRepository.save(file) }
     }
 }
