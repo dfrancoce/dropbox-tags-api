@@ -7,6 +7,7 @@ import com.dropbox.tagsapi.config.ApiProperties
 import com.dropbox.tagsapi.model.DropboxFile
 import org.apache.commons.io.IOUtils
 import org.springframework.stereotype.Service
+import java.io.IOException
 import java.io.OutputStream
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
@@ -19,7 +20,7 @@ import java.util.zip.ZipOutputStream
 class DropboxService(apiProperties: ApiProperties) {
     private val dropboxFiles: MutableList<DropboxFile> = mutableListOf()
     private val client = DropboxClient.getClient(apiProperties.dropboxAccessToken)
-    private val limit = apiProperties.zipSize.toLong()
+    private val limit = apiProperties.zipSize.toLong() * Math.pow(1024.0, 2.0)
 
     /**
      * Returns the all the files stored in the Dropbox of the client
@@ -35,7 +36,7 @@ class DropboxService(apiProperties: ApiProperties) {
     private fun iterateDropboxFoldersAndFiles(result: ListFolderResult) {
         for (metadata in result.entries) {
             if (metadata is FileMetadata) {
-                val dropboxFile = DropboxFile(id = metadata.id.split(":")[1], name = metadata.name, path = metadata.pathLower, tags = null)
+                val dropboxFile = DropboxFile(id = metadata.id.split(":")[1], name = metadata.name, path = metadata.pathLower, size = metadata.size, tags = null)
                 dropboxFiles.add(dropboxFile)
             }
 
@@ -50,20 +51,19 @@ class DropboxService(apiProperties: ApiProperties) {
      */
     fun downloadFileFromDropbox(dropboxFiles: List<DropboxFile>, outputStream: OutputStream): ZipOutputStream? {
         val zipOutputStream = ZipOutputStream(outputStream)
-        var currentSize = 0L
+        val totalSize = dropboxFiles.asSequence().map { dropboxFile -> dropboxFile.size }.sum()
+
+        if (totalSize > limit) {
+            throw IOException("The total size of the files requested is greater than the limit configured")
+        }
 
         for (dropboxFile in dropboxFiles) {
             val downloadedFile = client.files().download(dropboxFile.path)
-
+            val downloadedFileInputStream = downloadedFile.inputStream
             val zipEntry = ZipEntry(dropboxFile.name)
-            if (currentSize + zipEntry.compressedSize > limit) {
-                break
-            }
 
             zipOutputStream.putNextEntry(zipEntry)
-            val downloadedFileInputStream = downloadedFile.inputStream
             IOUtils.copy(downloadedFileInputStream, zipOutputStream)
-            currentSize += zipEntry.compressedSize
             downloadedFileInputStream.close()
             zipOutputStream.closeEntry()
         }
