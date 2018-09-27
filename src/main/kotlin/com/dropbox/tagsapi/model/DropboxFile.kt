@@ -9,4 +9,5 @@ import org.springframework.data.solr.core.mapping.SolrDocument
  * This class represents a dropbox file in solr
  */
 @SolrDocument(solrCoreName = "dropboxFile")
-data class DropboxFile(@Id @Field val id: String, @Field val name: String, @Field val path: String, @Field @Indexed val tags: MutableList<String>?)
+data class DropboxFile(@Id @Field val id: String, @Field val name: String, @Field val path: String, @Field val size: Long,
+                       @Field @Indexed val tags: MutableList<String>?)
