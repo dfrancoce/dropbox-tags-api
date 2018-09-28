@@ -15,10 +15,11 @@ import javax.servlet.http.HttpServletResponse
 @RestController
 @RequestMapping("/api")
 class DropboxFileController(private val dropboxFileService: DropboxFileService) {
+
     @RequestMapping(value = ["/zip"], produces = ["application/zip"])
     @ResponseStatus(HttpStatus.OK)
     fun getZip(response: HttpServletResponse, @RequestParam(value = "tags", required = false) tags: List<String>) {
         response.addHeader("Content-Disposition", "attachment; filename=\"files.zip\"")
-        dropboxFileService.downloadFileFromDropbox(tags, response.outputStream)
+        dropboxFileService.downloadZipFileFromDropbox(tags, response.outputStream)
     }
 }
