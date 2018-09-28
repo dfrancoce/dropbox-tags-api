@@ -10,6 +10,14 @@ These instructions will get you a copy of the project on a local machine ready f
 
 Docker
 
+### Configuration
+
+The API is configurable via environment variables passed in the Dockerfile
+
+* SOLR_HOST: URL of the solr instance
+* ZIP_SIZE: Indicates the max size the zip file containing the dropbox files requested can have
+* DROPBOX_ACCESS_TOKEN: Token needed to connect with dropbox
+
 ### Starting the app
 
 To get everything up and running quickly, a docker-compose file has been created. This allows us to have the API and a solr instance ready for testing in an easy way. It's possible to just use the API docker image and configure the solr host property to point to another solr instance. In that case, you can ignore the following instructions. The first thing we need to do to have solr configured with our own conf files, is to create a volume and copy the conf files of the project, so they're available when we run the docker-compose command. We need to run the following commands:
